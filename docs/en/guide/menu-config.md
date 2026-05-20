@@ -829,6 +829,8 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `tableHeader` table header
 - `tableFullWidth` table width adaptation
 
+After clicking `tableFullWidth`, the table switches to responsive `width: 100%` mode. It will keep following container width changes without extra clicks.
+
 ```ts
 editorConfig.MENU_CONF['insertTable'] = {
     minWidth: 60,
@@ -838,7 +840,7 @@ editorConfig.MENU_CONF['insertTable'] = {
     },
     // Table width adaptation
     tableFullWidth: {
-        selected: true, // By default enable form width adaptation
+        selected: true, // By default enable table width adaptation
     },
 }
 ```

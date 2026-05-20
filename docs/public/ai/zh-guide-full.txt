@@ -2,7 +2,7 @@
 
 > 本文件由脚本自动生成，汇总中文 Guide 的完整 Markdown，适合一次性投喂 AI。
 > 这是原始 Markdown 文件，不经过页面渲染。
-> 生成时间: 2026年4月13日 17:34:21 (Asia/Shanghai)
+> 生成时间: 2026年5月20日 18:03:09 (Asia/Shanghai)
 > 语言切换: [English Raw Markdown](/ai/en-guide-full.txt)
 
 ## 包含文件
@@ -2281,6 +2281,8 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` 单元格最小宽度
 - `tableHeader` 表头
 - `tableFullWidth` 表格宽度自适应
+
+`tableFullWidth` 点击后会切换为 `width: 100%` 的响应式模式。后续容器宽度变化时，表格会自动跟随，无需再次点击。
 
 ```ts
 editorConfig.MENU_CONF['insertTable'] = {
