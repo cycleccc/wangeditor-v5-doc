@@ -828,6 +828,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` table cell min width
 - `tableHeader` table header
 - `tableFullWidth` table width adaptation
+- `insertTableCol.insertPosition` column insert position (`before` | `after`, default `before`)
 
 ```ts
 editorConfig.MENU_CONF['insertTable'] = {
@@ -840,6 +841,14 @@ editorConfig.MENU_CONF['insertTable'] = {
     tableFullWidth: {
         selected: true, // By default enable form width adaptation
     },
+}
+```
+
+```ts
+editorConfig.MENU_CONF['insertTableCol'] = {
+    // 'before': insert before the current column (default)
+    // 'after': insert after the current column
+    insertPosition: 'after',
 }
 ```
 
