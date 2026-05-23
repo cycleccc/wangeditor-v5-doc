@@ -867,6 +867,8 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `tableFullWidth` 表格宽度自适应
 - `insertTableCol.insertPosition` 插入列位置（`before` | `after`，默认 `before`）
 
+`tableFullWidth` 点击后会切换为 `width: 100%` 的响应式模式。后续容器宽度变化时，表格会自动跟随，无需再次点击。
+
 ```ts
 editorConfig.MENU_CONF['insertTable'] = {
     minWidth: 60,
