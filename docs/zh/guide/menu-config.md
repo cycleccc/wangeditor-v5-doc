@@ -865,6 +865,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` 单元格最小宽度
 - `tableHeader` 表头
 - `tableFullWidth` 表格宽度自适应
+- `insertTableCol.insertPosition` 插入列位置（`before` | `after`，默认 `before`）
 
 ```ts
 editorConfig.MENU_CONF['insertTable'] = {
@@ -877,6 +878,14 @@ editorConfig.MENU_CONF['insertTable'] = {
     tableFullWidth: {
         selected: true, // 默认启用表格宽度自适应
     },
+}
+```
+
+```ts
+editorConfig.MENU_CONF['insertTableCol'] = {
+    // 'before' 表示在当前列前插入（默认）
+    // 'after' 表示在当前列后插入
+    insertPosition: 'after',
 }
 ```
 
