@@ -875,6 +875,16 @@ When you want to edit code language, you can only choose language from `editor.g
 If you want a new language, please commit an issue to us. It needs to change the editor's source code.
 :::
 
+## Code Block
+
+- `showCopyButton` whether to show the copy button on code blocks (default `false`)
+
+```ts
+editorConfig.MENU_CONF['codeBlock'] = {
+    showCopyButton: true,
+}
+```
+
 ## Others
 
 You can see [General-way](#general-way) to change other menus config.

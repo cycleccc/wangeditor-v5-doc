@@ -913,6 +913,16 @@ editorConfig.MENU_CONF['codeSelectLang'] = {
 如有其他语言的需要，可以给我们提交 issue ，这需要修改源码。
 :::
 
+## 代码块
+
+- `showCopyButton` 是否显示代码块复制按钮（默认 `false`）
+
+```ts
+editorConfig.MENU_CONF['codeBlock'] = {
+    showCopyButton: true,
+}
+```
+
 ## 其他
 
 其他菜单的配置，请参考上文的 [通用方法](#通用方法) 自行修改。
