@@ -54,6 +54,17 @@ editor.handleTab = () => editor.insertText('    ')
 
 You can format html by yourself, use [xml-formatter](https://www.npmjs.com/package/xml-formatter).
 
+### getHtmlWithId
+
+`editor.getHtmlWithId(idKey?)` returns HTML with generated unique id attributes.
+
+```ts
+const html = editor.getHtmlWithId() // default key: data-w-e-id
+const html2 = editor.getHtmlWithId('data-node-id') // custom key
+```
+
+This is useful when you need stable node mapping/positioning in server-side or rendering pipelines. It does not change `editor.getHtml()` output.
+
 ### getText
 
 Get editor's plain text.
@@ -181,17 +192,10 @@ editor.redo()
 
 ### clear history
 
-wangEditor does not currently expose a dedicated API to clear the undo / redo stacks. However, the editor instance is extended by `slate-history`, so you can reset `history` directly.
+Clear undo / redo history stacks.
 
 ```ts
-import type { HistoryEditor } from 'slate-history'
-
-const historyEditor = editor as HistoryEditor
-
-historyEditor.history = {
-  undos: [],
-  redos: [],
-}
+editor.clearHistory()
 ```
 
 A common use case is to run this right after `editor.setHtml(...)` or after loading existing content, so users cannot undo back to the previous content.

@@ -8,6 +8,13 @@
 
 使用 `editor.getHtml()` 获取 HTML 内容，可参考 [demo](https://wangeditor-next.github.io/demo/get-html.html)。使用 `editor.getText()` 获取纯文本内容。
 
+如果你需要导出带唯一标识属性的 HTML（用于节点追踪/定位），可使用 `editor.getHtmlWithId(idKey?)` ：
+
+```js
+const html = editor.getHtmlWithId() // 默认 data-w-e-id
+const html2 = editor.getHtmlWithId('data-node-id') // 自定义属性名
+```
+
 推荐使用 HTML 格式存储数据。
 
 ### 获取 JSON

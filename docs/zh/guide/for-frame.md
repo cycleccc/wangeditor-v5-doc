@@ -462,6 +462,25 @@ function MyEditor() {
 export default MyEditor
 ```
 
+### React 内置 loading（editor-for-react）
+
+`@wangeditor-next/editor-for-react` 支持 `loading` 和 `loadingText` 属性，可直接显示编辑器内部遮罩层。
+
+```tsx
+const [uploading, setUploading] = useState(false)
+
+<Editor
+  defaultConfig={editorConfig}
+  value={html}
+  onCreated={setEditor}
+  onChange={editor => setHtml(editor.getHtml())}
+  loading={uploading}
+  loadingText="Uploading..."
+/>
+```
+
+建议优先使用该方式，而不是在外层再套 `Spin/Loader` 改变编辑器 DOM 层级。
+
 ### 配置
 
 可通过 `toolbarConfig` 和 `editorConfig` 来修改菜单栏和编辑器的配置，详细文档参考

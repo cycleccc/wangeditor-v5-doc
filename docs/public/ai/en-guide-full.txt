@@ -2,7 +2,7 @@
 
 > This file is auto-generated and consolidates full Markdown from the English guide pages.
 > It is raw Markdown for one-shot AI context feeding (no page rendering).
-> Generated at: May 20, 2026, 18:03:09 (Asia/Shanghai)
+> Generated at: May 24, 2026, 12:51:44 (Asia/Shanghai)
 > Language: [中文 Raw Markdown](/ai/zh-guide-full.txt)
 
 ## Included Files
@@ -666,6 +666,25 @@ function MyEditor() {
 export default MyEditor
 ```
 
+### React built-in loading (editor-for-react)
+
+`@wangeditor-next/editor-for-react` supports `loading` and `loadingText` props for an internal editor overlay.
+
+```tsx
+const [uploading, setUploading] = useState(false)
+
+<Editor
+  defaultConfig={editorConfig}
+  value={html}
+  onCreated={setEditor}
+  onChange={editor => setHtml(editor.getHtml())}
+  loading={uploading}
+  loadingText="Uploading..."
+/>
+```
+
+Prefer this over wrapping the editor with an external `Spin/Loader` that changes editor DOM nesting.
+
 ### Config
 
 You can extend toolbar and editor config in `toolbarConfig` and `editorConfig` (above code)
@@ -707,6 +726,13 @@ return (
 ### Get HTML and Text
 
 Use `editor.getHtml()` to get HTML content, see [demo](https://wangeditor-next.github.io/demo/get-html.html?lang=en). Use `editor.getText()` to get text content.
+
+If you need HTML with unique id attributes (for node tracking/positioning), use `editor.getHtmlWithId(idKey?)`:
+
+```js
+const html = editor.getHtmlWithId() // default data-w-e-id
+const html2 = editor.getHtmlWithId('data-node-id') // custom attribute key
+```
 
 PS: HTML format is recommended.
 
@@ -1714,7 +1740,8 @@ editorConfig.MENU_CONF['uploadImage'] = {
 
 ### Server Address
 
-Required.
+Required when you use the built-in uploader.
+If you use `customUpload` or `uploadAdapter`, `server` is not required.
 
 ```ts
 editorConfig.MENU_CONF['uploadImage'] = {
@@ -1871,6 +1898,58 @@ editorConfig.MENU_CONF['uploadImage'] = {
 }
 ```
 
+#### Upload Adapter
+
+If you want to replace the transport layer but still reuse wangEditor's built-in upload callbacks and insert flow, use `uploadAdapter`.
+
+- `customUpload` means you fully take over upload and insertion
+- `uploadAdapter` means you only replace the uploader implementation, while the editor still reuses the existing progress, success, error, and insert flow
+- If both `customUpload` and `uploadAdapter` are configured, `customUpload` has higher priority
+
+```ts
+editorConfig.MENU_CONF['uploadImage'] = {
+    uploadAdapter({ config, editor }) {
+        const files: File[] = []
+
+        return {
+            addFiles(fileList) {
+                files.push(...fileList.map(item => item.data as File))
+            },
+            async upload() {
+                for (const file of files) {
+                    const fileInfo = {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                    }
+
+                    try {
+                        const res = await myUpload(file, editor)
+
+                        config.onProgress?.(100)
+                        config.onSuccess(fileInfo, {
+                            errno: 0,
+                            data: {
+                                url: res.url,
+                                alt: file.name,
+                                href: res.url,
+                            },
+                        })
+                    } catch (err) {
+                        config.onError(fileInfo, err, null)
+                    }
+                }
+            },
+        }
+    },
+}
+```
+
+:::tip
+`uploadAdapter` should call `config.onProgress`, `config.onSuccess`, `config.onError`, and related callbacks at the right time.
+If you want to reuse the editor's default insert flow, pass the same response body shape as the built-in uploader to `config.onSuccess`. If your response body is different, combine it with `customInsert`.
+:::
+
 #### Custom Select Images
 
 If you unwanted wangEditor's embedded select function, you can use `customBrowseAndUpload` to implement by yourself.
@@ -1975,7 +2054,8 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 
 ### Server Address
 
-Required.
+Required when you use the built-in uploader.
+If you use `customUpload` or `uploadAdapter`, `server` is not required.
 
 ```ts
 editorConfig.MENU_CONF['uploadVideo'] = {
@@ -2135,6 +2215,57 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 }
 ```
 
+#### Upload Adapter
+
+If you want to replace the transport layer but still reuse wangEditor's built-in upload callbacks and insert flow, use `uploadAdapter`.
+
+- `customUpload` means you fully take over upload and insertion
+- `uploadAdapter` means you only replace the uploader implementation, while the editor still reuses the existing progress, success, error, and insert flow
+- If both `customUpload` and `uploadAdapter` are configured, `customUpload` has higher priority
+
+```ts
+editorConfig.MENU_CONF['uploadVideo'] = {
+    uploadAdapter({ config, editor }) {
+        const files: File[] = []
+
+        return {
+            addFiles(fileList) {
+                files.push(...fileList.map(item => item.data as File))
+            },
+            async upload() {
+                for (const file of files) {
+                    const fileInfo = {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                    }
+
+                    try {
+                        const res = await myUpload(file, editor)
+
+                        config.onProgress?.(100)
+                        config.onSuccess(fileInfo, {
+                            errno: 0,
+                            data: {
+                                url: res.url,
+                                poster: res.poster || "",
+                            },
+                        })
+                    } catch (err) {
+                        config.onError(fileInfo, err, null)
+                    }
+                }
+            },
+        }
+    },
+}
+```
+
+:::tip
+`uploadAdapter` should call `config.onProgress`, `config.onSuccess`, `config.onError`, and related callbacks at the right time.
+If you want to reuse the editor's default insert flow, pass the same response body shape as the built-in uploader to `config.onSuccess`. If your response body is different, combine it with `customInsert`.
+:::
+
 #### Custom Select Videos
 
 If you unwanted wangEditor's embedded select function, you can use `customBrowseAndUpload` to implement by yourself.
@@ -2156,6 +2287,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` table cell min width
 - `tableHeader` table header
 - `tableFullWidth` table width adaptation
+- `insertTableCol.insertPosition` column insert position (`before` | `after`, default `before`)
 
 After clicking `tableFullWidth`, the table switches to responsive `width: 100%` mode. It will keep following container width changes without extra clicks.
 
@@ -2170,6 +2302,14 @@ editorConfig.MENU_CONF['insertTable'] = {
     tableFullWidth: {
         selected: true, // By default enable table width adaptation
     },
+}
+```
+
+```ts
+editorConfig.MENU_CONF['insertTableCol'] = {
+    // 'before': insert before the current column (default)
+    // 'after': insert after the current column
+    insertPosition: 'after',
 }
 ```
 
@@ -2193,6 +2333,16 @@ editorConfig.MENU_CONF['codeSelectLang'] = {
 When you want to edit code language, you can only choose language from `editor.getMenuConfig('codeSelectLang').codeLangs`.You can't edit it at will!<br>
 If you want a new language, please commit an issue to us. It needs to change the editor's source code.
 :::
+
+## Code Block
+
+- `showCopyButton` whether to show the copy button on code blocks (default `false`)
+
+```ts
+editorConfig.MENU_CONF['codeBlock'] = {
+    showCopyButton: true,
+}
+```
 
 ## Others
 
@@ -2259,6 +2409,17 @@ editor.handleTab = () => editor.insertText('    ')
 ```
 
 You can format html by yourself, use [xml-formatter](https://www.npmjs.com/package/xml-formatter).
+
+### getHtmlWithId
+
+`editor.getHtmlWithId(idKey?)` returns HTML with generated unique id attributes.
+
+```ts
+const html = editor.getHtmlWithId() // default key: data-w-e-id
+const html2 = editor.getHtmlWithId('data-node-id') // custom key
+```
+
+This is useful when you need stable node mapping/positioning in server-side or rendering pipelines. It does not change `editor.getHtml()` output.
 
 ### getText
 
@@ -2387,17 +2548,10 @@ editor.redo()
 
 ### clear history
 
-wangEditor does not currently expose a dedicated API to clear the undo / redo stacks. However, the editor instance is extended by `slate-history`, so you can reset `history` directly.
+Clear undo / redo history stacks.
 
 ```ts
-import type { HistoryEditor } from 'slate-history'
-
-const historyEditor = editor as HistoryEditor
-
-historyEditor.history = {
-  undos: [],
-  redos: [],
-}
+editor.clearHistory()
 ```
 
 A common use case is to run this right after `editor.setHtml(...)` or after loading existing content, so users cannot undo back to the previous content.

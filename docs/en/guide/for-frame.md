@@ -462,6 +462,25 @@ function MyEditor() {
 export default MyEditor
 ```
 
+### React built-in loading (editor-for-react)
+
+`@wangeditor-next/editor-for-react` supports `loading` and `loadingText` props for an internal editor overlay.
+
+```tsx
+const [uploading, setUploading] = useState(false)
+
+<Editor
+  defaultConfig={editorConfig}
+  value={html}
+  onCreated={setEditor}
+  onChange={editor => setHtml(editor.getHtml())}
+  loading={uploading}
+  loadingText="Uploading..."
+/>
+```
+
+Prefer this over wrapping the editor with an external `Spin/Loader` that changes editor DOM nesting.
+
 ### Config
 
 You can extend toolbar and editor config in `toolbarConfig` and `editorConfig` (above code)

@@ -54,6 +54,17 @@ editor.handleTab = () => editor.insertText('    ')
 
 你可以自行格式化 html ，如使用 [xml-formatter](https://www.npmjs.com/package/xml-formatter)
 
+### getHtmlWithId
+
+`editor.getHtmlWithId(idKey?)` 获取带唯一标识属性的 HTML。
+
+```ts
+const html = editor.getHtmlWithId() // 默认属性名为 data-w-e-id
+const html2 = editor.getHtmlWithId('data-node-id') // 自定义属性名
+```
+
+适用于需要在服务端或展示层做“节点追踪 / 精确定位”的场景。默认不影响 `editor.getHtml()` 的输出。
+
 ### getText
 
 获取当前编辑器的纯文本内容
@@ -198,17 +209,10 @@ editor.redo()
 
 ### clear history
 
-wangEditor 当前没有单独封装“清空 undo / redo 历史栈”的 API，但编辑器实例本身是基于 `slate-history` 扩展出来的，因此可以直接重置 `history`。
+清空 undo / redo 历史栈。
 
 ```ts
-import type { HistoryEditor } from 'slate-history'
-
-const historyEditor = editor as HistoryEditor
-
-historyEditor.history = {
-  undos: [],
-  redos: [],
-}
+editor.clearHistory()
 ```
 
 常见用法是在 `editor.setHtml(...)` 或数据回显完成后执行一次，避免用户撤销回旧内容。

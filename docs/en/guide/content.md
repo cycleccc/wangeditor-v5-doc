@@ -6,6 +6,13 @@
 
 Use `editor.getHtml()` to get HTML content, see [demo](https://wangeditor-next.github.io/demo/get-html.html?lang=en). Use `editor.getText()` to get text content.
 
+If you need HTML with unique id attributes (for node tracking/positioning), use `editor.getHtmlWithId(idKey?)`:
+
+```js
+const html = editor.getHtmlWithId() // default data-w-e-id
+const html2 = editor.getHtmlWithId('data-node-id') // custom attribute key
+```
+
 PS: HTML format is recommended.
 
 ### Get JSON

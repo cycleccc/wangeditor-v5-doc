@@ -2,7 +2,7 @@
 
 > 本文件由脚本自动生成，汇总中文 Guide 的完整 Markdown，适合一次性投喂 AI。
 > 这是原始 Markdown 文件，不经过页面渲染。
-> 生成时间: 2026年5月20日 18:03:09 (Asia/Shanghai)
+> 生成时间: 2026年5月24日 12:51:44 (Asia/Shanghai)
 > 语言切换: [English Raw Markdown](/ai/en-guide-full.txt)
 
 ## 包含文件
@@ -789,6 +789,25 @@ function MyEditor() {
 export default MyEditor
 ```
 
+### React 内置 loading（editor-for-react）
+
+`@wangeditor-next/editor-for-react` 支持 `loading` 和 `loadingText` 属性，可直接显示编辑器内部遮罩层。
+
+```tsx
+const [uploading, setUploading] = useState(false)
+
+<Editor
+  defaultConfig={editorConfig}
+  value={html}
+  onCreated={setEditor}
+  onChange={editor => setHtml(editor.getHtml())}
+  loading={uploading}
+  loadingText="Uploading..."
+/>
+```
+
+建议优先使用该方式，而不是在外层再套 `Spin/Loader` 改变编辑器 DOM 层级。
+
 ### 配置
 
 可通过 `toolbarConfig` 和 `editorConfig` 来修改菜单栏和编辑器的配置，详细文档参考
@@ -832,6 +851,13 @@ return (
 ### 获取 HTML 和 Text
 
 使用 `editor.getHtml()` 获取 HTML 内容，可参考 [demo](https://wangeditor-next.github.io/demo/get-html.html)。使用 `editor.getText()` 获取纯文本内容。
+
+如果你需要导出带唯一标识属性的 HTML（用于节点追踪/定位），可使用 `editor.getHtmlWithId(idKey?)` ：
+
+```js
+const html = editor.getHtmlWithId() // 默认 data-w-e-id
+const html2 = editor.getHtmlWithId('data-node-id') // 自定义属性名
+```
 
 推荐使用 HTML 格式存储数据。
 
@@ -1820,7 +1846,8 @@ editorConfig.MENU_CONF['uploadImage'] = {
 
 ### 服务端地址
 
-**必填**，否则上传图片会报错。
+使用内置上传器时 **必填**，否则上传图片会报错。
+如果你使用 `customUpload` 或 `uploadAdapter` ，则不需要配置 `server` 。
 
 ```ts
 editorConfig.MENU_CONF['uploadImage'] = {
@@ -1981,6 +2008,59 @@ editorConfig.MENU_CONF['uploadImage'] = {
 }
 ```
 
+#### 自定义上传适配器
+
+如果你想替换底层上传实现，但仍然复用 wangEditor 内置的上传回调和插入链路，可以使用 `uploadAdapter` 。
+
+- `customUpload` 表示你完全接管上传和插入
+- `uploadAdapter` 表示你只替换上传器实现，编辑器仍然复用现有的进度、成功、失败、错误和插入流程
+- 如果同时配置了 `customUpload` 和 `uploadAdapter` ，则优先使用 `customUpload`
+
+```ts
+editorConfig.MENU_CONF['uploadImage'] = {
+    uploadAdapter({ config, editor }) {
+        const files: File[] = []
+
+        return {
+            addFiles(fileList) {
+                files.push(...fileList.map(item => item.data as File))
+            },
+            async upload() {
+                for (const file of files) {
+                    const fileInfo = {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                    }
+
+                    try {
+                        // 例如：上传到 OSS / S3 / 自定义服务
+                        const res = await myUpload(file, editor)
+
+                        config.onProgress?.(100)
+                        config.onSuccess(fileInfo, {
+                            errno: 0,
+                            data: {
+                                url: res.url,
+                                alt: file.name,
+                                href: res.url,
+                            },
+                        })
+                    } catch (err) {
+                        config.onError(fileInfo, err, null)
+                    }
+                }
+            },
+        }
+    },
+}
+```
+
+:::tip
+`uploadAdapter` 需要在合适的时机主动调用 `config.onProgress`、`config.onSuccess`、`config.onError` 等回调。
+如果你想复用编辑器默认插入逻辑，请给 `config.onSuccess` 传入和内置上传一致的 response body；如果你的返回格式不同，可以配合 `customInsert` 一起使用。
+:::
+
 #### 自定义选择图片
 
 如果你不想使用 wangEditor 自带的选择文件功能，例如你有自己的图床，或者图片选择器。<br>
@@ -2095,7 +2175,8 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 
 ### 服务端地址
 
-**必填**，否则上传视频会报错。
+使用内置上传器时 **必填**，否则上传视频会报错。
+如果你使用 `customUpload` 或 `uploadAdapter` ，则不需要配置 `server` 。
 
 ```ts
 editorConfig.MENU_CONF['uploadVideo'] = {
@@ -2258,6 +2339,57 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 }
 ```
 
+#### 自定义上传适配器
+
+如果你想替换底层上传实现，但仍然复用 wangEditor 内置的上传回调和插入链路，可以使用 `uploadAdapter` 。
+
+- `customUpload` 表示你完全接管上传和插入
+- `uploadAdapter` 表示你只替换上传器实现，编辑器仍然复用现有的进度、成功、失败、错误和插入流程
+- 如果同时配置了 `customUpload` 和 `uploadAdapter` ，则优先使用 `customUpload`
+
+```ts
+editorConfig.MENU_CONF['uploadVideo'] = {
+    uploadAdapter({ config, editor }) {
+        const files: File[] = []
+
+        return {
+            addFiles(fileList) {
+                files.push(...fileList.map(item => item.data as File))
+            },
+            async upload() {
+                for (const file of files) {
+                    const fileInfo = {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                    }
+
+                    try {
+                        const res = await myUpload(file, editor)
+
+                        config.onProgress?.(100)
+                        config.onSuccess(fileInfo, {
+                            errno: 0,
+                            data: {
+                                url: res.url,
+                                poster: res.poster || "",
+                            },
+                        })
+                    } catch (err) {
+                        config.onError(fileInfo, err, null)
+                    }
+                }
+            },
+        }
+    },
+}
+```
+
+:::tip
+`uploadAdapter` 需要在合适的时机主动调用 `config.onProgress`、`config.onSuccess`、`config.onError` 等回调。
+如果你想复用编辑器默认插入逻辑，请给 `config.onSuccess` 传入和内置上传一致的 response body；如果你的返回格式不同，可以配合 `customInsert` 一起使用。
+:::
+
 #### 自定义选择视频
 
 如果你不想使用 wangEditor 自带的选择文件功能，例如你有自己的图床，或者视频文件选择器。<br>
@@ -2281,6 +2413,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` 单元格最小宽度
 - `tableHeader` 表头
 - `tableFullWidth` 表格宽度自适应
+- `insertTableCol.insertPosition` 插入列位置（`before` | `after`，默认 `before`）
 
 `tableFullWidth` 点击后会切换为 `width: 100%` 的响应式模式。后续容器宽度变化时，表格会自动跟随，无需再次点击。
 
@@ -2295,6 +2428,14 @@ editorConfig.MENU_CONF['insertTable'] = {
     tableFullWidth: {
         selected: true, // 默认启用表格宽度自适应
     },
+}
+```
+
+```ts
+editorConfig.MENU_CONF['insertTableCol'] = {
+    // 'before' 表示在当前列前插入（默认）
+    // 'after' 表示在当前列后插入
+    insertPosition: 'after',
 }
 ```
 
@@ -2319,6 +2460,16 @@ editorConfig.MENU_CONF['codeSelectLang'] = {
 配置代码语言时，只能从 `editor.getMenuConfig('codeSelectLang').codeLangs` 中选择，不能自己随意增加。
 如有其他语言的需要，可以给我们提交 issue ，这需要修改源码。
 :::
+
+## 代码块
+
+- `showCopyButton` 是否显示代码块复制按钮（默认 `false`）
+
+```ts
+editorConfig.MENU_CONF['codeBlock'] = {
+    showCopyButton: true,
+}
+```
 
 ## 其他
 
@@ -2385,6 +2536,17 @@ editor.handleTab = () => editor.insertText('    ')
 ```
 
 你可以自行格式化 html ，如使用 [xml-formatter](https://www.npmjs.com/package/xml-formatter)
+
+### getHtmlWithId
+
+`editor.getHtmlWithId(idKey?)` 获取带唯一标识属性的 HTML。
+
+```ts
+const html = editor.getHtmlWithId() // 默认属性名为 data-w-e-id
+const html2 = editor.getHtmlWithId('data-node-id') // 自定义属性名
+```
+
+适用于需要在服务端或展示层做“节点追踪 / 精确定位”的场景。默认不影响 `editor.getHtml()` 的输出。
 
 ### getText
 
@@ -2530,17 +2692,10 @@ editor.redo()
 
 ### clear history
 
-wangEditor 当前没有单独封装“清空 undo / redo 历史栈”的 API，但编辑器实例本身是基于 `slate-history` 扩展出来的，因此可以直接重置 `history`。
+清空 undo / redo 历史栈。
 
 ```ts
-import type { HistoryEditor } from 'slate-history'
-
-const historyEditor = editor as HistoryEditor
-
-historyEditor.history = {
-  undos: [],
-  redos: [],
-}
+editor.clearHistory()
 ```
 
 常见用法是在 `editor.setHtml(...)` 或数据回显完成后执行一次，避免用户撤销回旧内容。
