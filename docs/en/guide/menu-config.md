@@ -828,6 +828,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` table cell min width
 - `tableHeader` table header
 - `tableFullWidth` table width adaptation
+- `widthExportMode` table width export strategy (`explicit` | `adaptive`, default `explicit`)
 - `insertTableCol.insertPosition` column insert position (`before` | `after`, default `before`)
 
 After clicking `tableFullWidth`, the table switches to responsive `width: 100%` mode. It will keep following container width changes without extra clicks.
@@ -843,6 +844,18 @@ editorConfig.MENU_CONF['insertTable'] = {
     tableFullWidth: {
         selected: true, // By default enable table width adaptation
     },
+    // Table width export strategy
+    // explicit: legacy-compatible behavior, prefers fixed pixel width in export
+    // adaptive: preserve width:auto (for cases where you don't want auto width to be materialized)
+    widthExportMode: 'explicit',
+}
+```
+
+If you want tables imported from `setHtml` with `width:auto` to stay `width:auto` on `getHtml`, enable `adaptive`:
+
+```ts
+editorConfig.MENU_CONF['insertTable'] = {
+    widthExportMode: 'adaptive',
 }
 ```
 
