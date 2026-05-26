@@ -13,7 +13,7 @@
 ```html
 <link href="https://unpkg.com/@wangeditor-next/editor@latest/dist/css/style.css" rel="stylesheet">
 <style>
-  #editor—wrapper {
+  #editor-wrapper {
     border: 1px solid #ccc;
     z-index: 100; /* 按需定义 */
   }
@@ -36,7 +36,7 @@
 ### 定义 HTML 结构
 
 ```html
-<div id="editor—wrapper">
+<div id="editor-wrapper">
     <div id="toolbar-container"><!-- 工具栏 --></div>
     <div id="editor-container"><!-- 编辑器 --></div>
 </div>
