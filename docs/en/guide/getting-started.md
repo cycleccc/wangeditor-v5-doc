@@ -11,7 +11,7 @@ You can see [demo](https://wangeditor-next.github.io/demo/index.html?lang=en) pa
 ```html
 <link href="https://unpkg.com/@wangeditor-next/editor@latest/dist/css/style.css" rel="stylesheet">
 <style>
-  #editor—wrapper {
+  #editor-wrapper {
     border: 1px solid #ccc;
     z-index: 100; /* If you need */
   }
@@ -34,7 +34,7 @@ You can see [demo](https://wangeditor-next.github.io/demo/index.html?lang=en) pa
 ### Define Html Code
 
 ```html
-<div id="editor—wrapper">
+<div id="editor-wrapper">
     <div id="toolbar-container"><!-- toolbar --></div>
     <div id="editor-container"><!-- editor --></div>
 </div>
