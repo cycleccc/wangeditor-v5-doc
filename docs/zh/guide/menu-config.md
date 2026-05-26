@@ -865,6 +865,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` 单元格最小宽度
 - `tableHeader` 表头
 - `tableFullWidth` 表格宽度自适应
+- `widthExportMode` 表格宽度导出策略（`explicit` | `adaptive`，默认 `explicit`）
 - `insertTableCol.insertPosition` 插入列位置（`before` | `after`，默认 `before`）
 
 `tableFullWidth` 点击后会切换为 `width: 100%` 的响应式模式。后续容器宽度变化时，表格会自动跟随，无需再次点击。
@@ -880,6 +881,18 @@ editorConfig.MENU_CONF['insertTable'] = {
     tableFullWidth: {
         selected: true, // 默认启用表格宽度自适应
     },
+    // 表格宽度导出策略
+    // explicit: 兼容历史行为，优先导出固定像素宽
+    // adaptive: 保留 width:auto（适合不希望自动固化列宽的场景）
+    widthExportMode: 'explicit',
+}
+```
+
+如果你希望 `setHtml` 导入 `width:auto` 的表格后，`getHtml` 仍然保持 `width:auto`，可以开启 `adaptive`：
+
+```ts
+editorConfig.MENU_CONF['insertTable'] = {
+    widthExportMode: 'adaptive',
 }
 ```
 
