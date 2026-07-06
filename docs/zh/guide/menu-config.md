@@ -47,9 +47,12 @@ editorConfig.MENU_CONF['otherMenuKey'] = {
 
 // 创建 editor 或传入 Vue React <Editor> 组件
 ```
-### 修改默认配置
+### 初始化内容样式
 
-#### 修改默认字体、字号、行高
+#### 为初始内容设置字体、字号、行高
+
+如果希望编辑器打开时已有内容带有字体、字号或行高，可以在初始内容中写入对应样式。
+这不会改变空白编辑器的默认字号，也不会改变工具栏中“默认字号”的含义。
 
 ```ts
     const jsonContent = [
@@ -63,7 +66,7 @@ editorConfig.MENU_CONF['otherMenuKey'] = {
     ]
 ```
 
-Vue React Editor组件有 defaultContent 属性，可传入上述 jsonContent
+Vue React Editor 组件有 `defaultContent` 属性，可传入上述 `jsonContent`。
 
 HTML 格式
 
@@ -71,7 +74,7 @@ HTML 格式
     const htmlContent = '<p style="line-height: 1.5;"><span style="font-size: 32px; font-family: 黑体;">hello world</span></p>'
 ``` 
 
-Vue Editor件可以使用 v-model 属性传入 HTML 内容，React Editor组件可以使用 value 属性传入 HTML 内容使用
+Vue Editor 组件可以使用 `v-model` 属性传入 HTML 内容，React Editor 组件可以使用 `value` 属性传入 HTML 内容。
 
 - [Vue修改默认字体字号行高](https://codesandbox.io/p/sandbox/vue2-wangeditor-demo-forked-67fh5s)
 - [React修改默认字体字号行高](https://codesandbox.io/p/sandbox/react-wangeditor-defaultfont-59c48n)
@@ -111,6 +114,8 @@ editorConfig.MENU_CONF['bgColor'] = {
 
 ## 字号
 
+`fontSizeList` 只配置字号下拉菜单的可选项，不会把“默认字号”改成某个值。工具栏里的“默认字号”表示当前文字没有设置 `fontSize` 样式。
+
 ```ts
 editorConfig.MENU_CONF['fontSize'] = {
     fontSizeList: [
@@ -125,6 +130,16 @@ editorConfig.MENU_CONF['fontSize'] = {
     ]
 }
 ```
+
+如果只是希望编辑器内容区默认显示为 14px，可以用 CSS 设置内容区字号：
+
+```css
+.w-e-text-container [data-slate-editor] {
+    font-size: 14px;
+}
+```
+
+如果希望导出的 HTML 也包含 `font-size: 14px`，需要在内容数据中写入 `fontSize: '14px'`，或者传入带 `font-size: 14px` 的 HTML。
 
 ## 字体
 

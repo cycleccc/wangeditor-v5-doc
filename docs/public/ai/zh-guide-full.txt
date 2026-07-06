@@ -2,7 +2,7 @@
 
 > 本文件由脚本自动生成，汇总中文 Guide 的完整 Markdown，适合一次性投喂 AI。
 > 这是原始 Markdown 文件，不经过页面渲染。
-> 生成时间: 2026年5月24日 12:51:44 (Asia/Shanghai)
+> 生成时间: 2026年7月6日 09:54:49 (Asia/Shanghai)
 > 语言切换: [English Raw Markdown](/ai/en-guide-full.txt)
 
 ## 包含文件
@@ -1595,9 +1595,12 @@ editorConfig.MENU_CONF['otherMenuKey'] = {
 
 // 创建 editor 或传入 Vue React <Editor> 组件
 ```
-### 修改默认配置
+### 初始化内容样式
 
-#### 修改默认字体、字号、行高
+#### 为初始内容设置字体、字号、行高
+
+如果希望编辑器打开时已有内容带有字体、字号或行高，可以在初始内容中写入对应样式。
+这不会改变空白编辑器的默认字号，也不会改变工具栏中“默认字号”的含义。
 
 ```ts
     const jsonContent = [
@@ -1611,7 +1614,7 @@ editorConfig.MENU_CONF['otherMenuKey'] = {
     ]
 ```
 
-Vue React Editor组件有 defaultContent 属性，可传入上述 jsonContent
+Vue React Editor 组件有 `defaultContent` 属性，可传入上述 `jsonContent`。
 
 HTML 格式
 
@@ -1619,7 +1622,7 @@ HTML 格式
     const htmlContent = '<p style="line-height: 1.5;"><span style="font-size: 32px; font-family: 黑体;">hello world</span></p>'
 ``` 
 
-Vue Editor件可以使用 v-model 属性传入 HTML 内容，React Editor组件可以使用 value 属性传入 HTML 内容使用
+Vue Editor 组件可以使用 `v-model` 属性传入 HTML 内容，React Editor 组件可以使用 `value` 属性传入 HTML 内容。
 
 - [Vue修改默认字体字号行高](https://codesandbox.io/p/sandbox/vue2-wangeditor-demo-forked-67fh5s)
 - [React修改默认字体字号行高](https://codesandbox.io/p/sandbox/react-wangeditor-defaultfont-59c48n)
@@ -1659,6 +1662,8 @@ editorConfig.MENU_CONF['bgColor'] = {
 
 ## 字号
 
+`fontSizeList` 只配置字号下拉菜单的可选项，不会把“默认字号”改成某个值。工具栏里的“默认字号”表示当前文字没有设置 `fontSize` 样式。
+
 ```ts
 editorConfig.MENU_CONF['fontSize'] = {
     fontSizeList: [
@@ -1673,6 +1678,16 @@ editorConfig.MENU_CONF['fontSize'] = {
     ]
 }
 ```
+
+如果只是希望编辑器内容区默认显示为 14px，可以用 CSS 设置内容区字号：
+
+```css
+.w-e-text-container [data-slate-editor] {
+    font-size: 14px;
+}
+```
+
+如果希望导出的 HTML 也包含 `font-size: 14px`，需要在内容数据中写入 `fontSize: '14px'`，或者传入带 `font-size: 14px` 的 HTML。
 
 ## 字体
 
@@ -2413,6 +2428,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` 单元格最小宽度
 - `tableHeader` 表头
 - `tableFullWidth` 表格宽度自适应
+- `widthExportMode` 表格宽度导出策略（`explicit` | `adaptive`，默认 `explicit`）
 - `insertTableCol.insertPosition` 插入列位置（`before` | `after`，默认 `before`）
 
 `tableFullWidth` 点击后会切换为 `width: 100%` 的响应式模式。后续容器宽度变化时，表格会自动跟随，无需再次点击。
@@ -2428,6 +2444,18 @@ editorConfig.MENU_CONF['insertTable'] = {
     tableFullWidth: {
         selected: true, // 默认启用表格宽度自适应
     },
+    // 表格宽度导出策略
+    // explicit: 兼容历史行为，优先导出固定像素宽
+    // adaptive: 保留 width:auto（适合不希望自动固化列宽的场景）
+    widthExportMode: 'explicit',
+}
+```
+
+如果你希望 `setHtml` 导入 `width:auto` 的表格后，`getHtml` 仍然保持 `width:auto`，可以开启 `adaptive`：
+
+```ts
+editorConfig.MENU_CONF['insertTable'] = {
+    widthExportMode: 'adaptive',
 }
 ```
 
