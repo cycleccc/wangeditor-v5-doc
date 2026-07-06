@@ -41,9 +41,13 @@ editorConfig.MENU_CONF['otherMenuKey'] = {
 
 // create editor, or Vue React <Editor> component
 ```
-### change the default Menu Conifg
+### Initialize Content Styles
 
-#### Change the default font, font size, and line height
+#### Set font, font size, and line height for initial content
+
+If you want the editor to open with content that already has a font, font size, or line height,
+write those styles into the initial content. This does not change the default font size of an
+empty editor, and it does not change the meaning of the "default font size" toolbar option.
 
 ```ts
     const jsonContent = [
@@ -57,7 +61,7 @@ editorConfig.MENU_CONF['otherMenuKey'] = {
     ]
 ```
 
-The Vue and React Editor component has the defaultContent attribute, which can be passed in the above jsonContent
+The Vue and React Editor components have a `defaultContent` prop. You can pass the `jsonContent` above.
 
 HTML Format 
 
@@ -65,7 +69,7 @@ HTML Format
     const htmlContent = '<p style="line-height: 1.5;"><span style="font-size: 32px; font-family: 黑体;">hello world</span></p>'
 ``` 
 
-The Vue Editor component can use the v-model attribute to pass in HTML content, and the React Editor component can use the value attribute to pass in HTML content.
+The Vue Editor component can use `v-model` to pass HTML content, and the React Editor component can use `value` to pass HTML content.
 
 - [Vue changes the default font size and line height](https://codesandbox.io/p/sandbox/vue2-wangeditor-demo-forked-67fh5s)
 - [React changes the default font size and line height](https://codesandbox.io/p/sandbox/react-wangeditor-defaultfont-59c48n)
@@ -105,6 +109,10 @@ editorConfig.MENU_CONF['bgColor'] = {
 
 ## Font Size
 
+`fontSizeList` only configures the options in the font size dropdown. It does not set the
+"default font size" to a specific value. The "default font size" toolbar option means the
+current text does not have a `fontSize` style.
+
 ```ts
 editorConfig.MENU_CONF['fontSize'] = {
     fontSizeList: [
@@ -119,6 +127,18 @@ editorConfig.MENU_CONF['fontSize'] = {
     ]
 }
 ```
+
+If you only want the editor content area to display 14px text by default, set the content
+area font size with CSS:
+
+```css
+.w-e-text-container [data-slate-editor] {
+    font-size: 14px;
+}
+```
+
+If you want exported HTML to include `font-size: 14px`, write `fontSize: '14px'` into the
+content data, or pass HTML that includes `font-size: 14px`.
 
 ## Font-Family
 
