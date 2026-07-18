@@ -2,27 +2,28 @@
 
 > This file is auto-generated and consolidates full Markdown from the English guide pages.
 > It is raw Markdown for one-shot AI context feeding (no page rendering).
-> Generated at: May 24, 2026, 12:51:44 (Asia/Shanghai)
+> Generated at: Jul 17, 2026, 16:15:23 (Asia/Shanghai)
 > Language: [中文 Raw Markdown](/ai/zh-guide-full.txt)
 
 ## Included Files
 1. `docs/en/guide/index.md`
 2. `docs/en/guide/installation.md`
-3. `docs/en/guide/getting-started.md`
-4. `docs/en/guide/for-frame.md`
-5. `docs/en/guide/content.md`
-6. `docs/en/guide/toolbar-config.md`
-7. `docs/en/guide/editor-config.md`
-8. `docs/en/guide/csp-class-mode.md`
-9. `docs/en/guide/menu-config.md`
-10. `docs/en/guide/API.md`
-11. `docs/en/guide/node-define.md`
-12. `docs/en/guide/development.md`
-13. `docs/en/guide/i18n.md`
-14. `docs/en/guide/theme.md`
-15. `docs/en/guide/for-ts.md`
-16. `docs/en/guide/plugins.md`
-17. `docs/en/guide/video-course.md`
+3. `docs/en/guide/migration-v6.md`
+4. `docs/en/guide/getting-started.md`
+5. `docs/en/guide/for-frame.md`
+6. `docs/en/guide/content.md`
+7. `docs/en/guide/toolbar-config.md`
+8. `docs/en/guide/editor-config.md`
+9. `docs/en/guide/csp-class-mode.md`
+10. `docs/en/guide/menu-config.md`
+11. `docs/en/guide/API.md`
+12. `docs/en/guide/node-define.md`
+13. `docs/en/guide/development.md`
+14. `docs/en/guide/i18n.md`
+15. `docs/en/guide/theme.md`
+16. `docs/en/guide/for-ts.md`
+17. `docs/en/guide/plugins.md`
+18. `docs/en/guide/video-course.md`
 
 ---
 
@@ -72,8 +73,8 @@ yarn add @wangeditor-next/editor-for-vue2
 Install Vue 3.x editor component  (optional)
 
 ```shell
-yarn add @wangeditor-next/editor-for-vue@next
-# npm install @wangeditor-next/editor-for-vue@next --save
+yarn add @wangeditor-next/editor-for-vue
+# npm install @wangeditor-next/editor-for-vue --save
 ```
 
 ## CDN
@@ -91,9 +92,85 @@ yarn add @wangeditor-next/editor-for-vue@next
 
 ---
 
+<!-- source: docs/en/guide/migration-v6.md -->
+
+## 3. migration-v6.md
+
+# Upgrade from v5 to v6
+
+The main breaking change in `@wangeditor-next/editor@6.0.0` is the alignment model and exported
+HTML structure of built-in video nodes. Other changes in the same release, including table drag
+behavior, are bug fixes.
+
+## Upgrade dependencies
+
+```shell
+npm install @wangeditor-next/editor@^6.0.0
+```
+
+React projects must upgrade the wrapper at the same time:
+
+```shell
+npm install @wangeditor-next/editor-for-react@^3.0.0
+```
+
+For Vue 2, Vue 3, and optional plugins, install their latest releases and verify that the lockfile
+actually resolves `@wangeditor-next/editor` to 6.x.
+
+## Video node alignment
+
+v5 video nodes used `textAlign`. v6 uses the media-specific `align` field:
+
+```ts
+type VideoAlign = 'left' | 'center' | 'right'
+
+const video = {
+  type: 'video',
+  src: 'https://example.com/video.mp4',
+  align: 'center' as VideoAlign,
+  children: [{ text: '' }],
+}
+```
+
+Legacy `textAlign` nodes and HTML remain importable. The editor maps `left`, `center`, and `right`
+to the new media alignment model. `justify` is no longer valid for videos, and unknown values fall
+back to center alignment.
+
+## Exported HTML structure
+
+v5 used `<div data-w-e-type="video">` with `text-align`. v6 exports a full-width flex container:
+
+```html
+<figure
+  data-w-e-type="video"
+  data-w-e-is-void
+  data-w-e-align="center"
+  style="display: flex; justify-content: center; margin: 0; max-width: 100%; width: 100%;"
+>
+  <video><!-- ... --></video>
+</figure>
+```
+
+If application CSS, HTML sanitizers, server-side templates, or automated tests depend on the old
+`div` tag, `data-w-e-text-align`, or `text-align`, update them to support
+`figure[data-w-e-type="video"]`, `data-w-e-align`, and the flex alignment structure.
+
+## Upgrade checklist
+
+1. Replace `textAlign` with `align` in custom video nodes.
+2. Find CSS and DOM queries that target `div[data-w-e-type="video"]`.
+3. Verify that video HTML from `editor.getHtml()` passes application sanitization and persistence.
+4. Run `editor.setHtml(oldHtml)` with existing content and verify video position and size.
+5. In React projects, verify that `@wangeditor-next/editor-for-react` is on 3.x.
+
+See the [v6.0.0 release notes](https://github.com/wangeditor-next/wangEditor-next/releases/tag/v6.0.0)
+for the complete release.
+
+---
+
 <!-- source: docs/en/guide/getting-started.md -->
 
-## 3. getting-started.md
+## 4. getting-started.md
 
 # Getting Started
 
@@ -200,7 +277,7 @@ If you want a completed editor, you may need to the following work
 
 <!-- source: docs/en/guide/for-frame.md -->
 
-## 4. for-frame.md
+## 5. for-frame.md
 
 # For Vue React
 
@@ -392,7 +469,7 @@ methods: {
 
 ### Installation
 
-Install `@wangeditor-next/editor` and `@wangeditor-next/editor-for-vue@next`, see [Installation](./installation.md).
+Install `@wangeditor-next/editor` and `@wangeditor-next/editor-for-vue`, see [Installation](./installation.md).
 
 ```sh
 yarn add @wangeditor-next/editor
@@ -717,7 +794,7 @@ return (
 
 <!-- source: docs/en/guide/content.md -->
 
-## 5. content.md
+## 6. content.md
 
 # Content
 
@@ -842,7 +919,7 @@ Goto [API](./API.md) to checkout more content APIs.
 
 <!-- source: docs/en/guide/toolbar-config.md -->
 
-## 6. toolbar-config.md
+## 7. toolbar-config.md
 
 # Toolbar Config
 
@@ -1010,7 +1087,7 @@ You could checkout [example source code](https://github.com/wangeditor-next/wang
 
 <!-- source: docs/en/guide/editor-config.md -->
 
-## 7. editor-config.md
+## 8. editor-config.md
 
 # Editor Config
 
@@ -1344,7 +1421,7 @@ Use in third-party plugin, like [mention plugin](https://github.com/wangeditor-n
 
 <!-- source: docs/en/guide/csp-class-mode.md -->
 
-## 8. csp-class-mode.md
+## 9. csp-class-mode.md
 
 # CSP Class Style Mode
 
@@ -1455,7 +1532,7 @@ For custom tokens, prefer rules based on `data-w-e-*` instead of hash class name
 
 <!-- source: docs/en/guide/menu-config.md -->
 
-## 9. menu-config.md
+## 10. menu-config.md
 
 # Menu Config
 
@@ -2287,6 +2364,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` table cell min width
 - `tableHeader` table header
 - `tableFullWidth` table width adaptation
+- `widthExportMode` table width export strategy (`explicit` | `adaptive`, default `explicit`)
 - `insertTableCol.insertPosition` column insert position (`before` | `after`, default `before`)
 
 After clicking `tableFullWidth`, the table switches to responsive `width: 100%` mode. It will keep following container width changes without extra clicks.
@@ -2302,6 +2380,18 @@ editorConfig.MENU_CONF['insertTable'] = {
     tableFullWidth: {
         selected: true, // By default enable table width adaptation
     },
+    // Table width export strategy
+    // explicit: legacy-compatible behavior, prefers fixed pixel width in export
+    // adaptive: preserve width:auto (for cases where you don't want auto width to be materialized)
+    widthExportMode: 'explicit',
+}
+```
+
+If you want tables imported from `setHtml` with `width:auto` to stay `width:auto` on `getHtml`, enable `adaptive`:
+
+```ts
+editorConfig.MENU_CONF['insertTable'] = {
+    widthExportMode: 'adaptive',
 }
 ```
 
@@ -2352,7 +2442,7 @@ You can see [General-way](#general-way) to change other menus config.
 
 <!-- source: docs/en/guide/API.md -->
 
-## 10. API.md
+## 11. API.md
 
 # Editor API
 
@@ -3030,7 +3120,7 @@ import { SlateLocation, SlatePath, SlatePoint, SlateRange } from '@wangeditor-ne
 
 <!-- source: docs/en/guide/node-define.md -->
 
-## 11. node-define.md
+## 12. node-define.md
 
 # Date Structure
 
@@ -3118,7 +3208,7 @@ See `type` in every source code.
 
 <!-- source: docs/en/guide/development.md -->
 
-## 12. development.md
+## 13. development.md
 
 # Extend
 
@@ -3130,7 +3220,7 @@ See [Chinese version](../../zh/guide/development.md).
 
 <!-- source: docs/en/guide/i18n.md -->
 
-## 13. i18n.md
+## 14. i18n.md
 
 # I18n
 
@@ -3195,7 +3285,7 @@ console.log( t('header.title') )
 
 <!-- source: docs/en/guide/theme.md -->
 
-## 14. theme.md
+## 15. theme.md
 
 # Theme
 
@@ -3214,7 +3304,7 @@ html.dark {
 
 <!-- source: docs/en/guide/for-ts.md -->
 
-## 15. for-ts.md
+## 16. for-ts.md
 
 # For Typescript
 
@@ -3245,7 +3335,7 @@ declare module '@wangeditor-next/editor' {
 
 <!-- source: docs/en/guide/plugins.md -->
 
-## 16. plugins.md
+## 17. plugins.md
 
 # Plugins
 
@@ -3261,7 +3351,7 @@ declare module '@wangeditor-next/editor' {
 
 <!-- source: docs/en/guide/video-course.md -->
 
-## 17. video-course.md
+## 18. video-course.md
 
 # Video Tutorials
 

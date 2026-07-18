@@ -1,4 +1,4 @@
-# wangEditor v5 doc
+# wangEditor-next v6 docs
 
 线上地址：https://wangeditor-next.github.io/docs/
 

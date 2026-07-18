@@ -93,6 +93,11 @@ function sidebarGuide(): DefaultTheme.SidebarItem[] {
             link: '/installation',
         },
         {
+            text: '从 v5 升级到 v6',
+            collapsed: false,
+            link: '/migration-v6',
+        },
+        {
             text: '基础',
             collapsed: false,
             items: [

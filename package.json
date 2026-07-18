@@ -21,6 +21,6 @@
     "eslint": "9.5.0",
     "markdown-it-mathjax3": "^4.3.2",
     "vitepress": "^1.6.4",
-    "@wangeditor-next/editor": "latest"
+    "@wangeditor-next/editor": "6.0.0"
   }
 }

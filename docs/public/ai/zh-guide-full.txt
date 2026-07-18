@@ -2,27 +2,28 @@
 
 > 本文件由脚本自动生成，汇总中文 Guide 的完整 Markdown，适合一次性投喂 AI。
 > 这是原始 Markdown 文件，不经过页面渲染。
-> 生成时间: 2026年5月24日 12:51:44 (Asia/Shanghai)
+> 生成时间: 2026年7月17日 16:15:23 (Asia/Shanghai)
 > 语言切换: [English Raw Markdown](/ai/en-guide-full.txt)
 
 ## 包含文件
 1. `docs/zh/guide/index.md`
 2. `docs/zh/guide/installation.md`
-3. `docs/zh/guide/getting-started.md`
-4. `docs/zh/guide/for-frame.md`
-5. `docs/zh/guide/content.md`
-6. `docs/zh/guide/toolbar-config.md`
-7. `docs/zh/guide/editor-config.md`
-8. `docs/zh/guide/csp-class-mode.md`
-9. `docs/zh/guide/menu-config.md`
-10. `docs/zh/guide/API.md`
-11. `docs/zh/guide/node-define.md`
-12. `docs/zh/guide/development.md`
-13. `docs/zh/guide/i18n.md`
-14. `docs/zh/guide/theme.md`
-15. `docs/zh/guide/for-ts.md`
-16. `docs/zh/guide/plugins.md`
-17. `docs/zh/guide/video-course.md`
+3. `docs/zh/guide/migration-v6.md`
+4. `docs/zh/guide/getting-started.md`
+5. `docs/zh/guide/for-frame.md`
+6. `docs/zh/guide/content.md`
+7. `docs/zh/guide/toolbar-config.md`
+8. `docs/zh/guide/editor-config.md`
+9. `docs/zh/guide/csp-class-mode.md`
+10. `docs/zh/guide/menu-config.md`
+11. `docs/zh/guide/API.md`
+12. `docs/zh/guide/node-define.md`
+13. `docs/zh/guide/development.md`
+14. `docs/zh/guide/i18n.md`
+15. `docs/zh/guide/theme.md`
+16. `docs/zh/guide/for-ts.md`
+17. `docs/zh/guide/plugins.md`
+18. `docs/zh/guide/video-course.md`
 
 ---
 
@@ -211,9 +212,82 @@ yarn add @wangeditor-next/editor-for-vue
 
 ---
 
+<!-- source: docs/zh/guide/migration-v6.md -->
+
+## 3. migration-v6.md
+
+# 从 v5 升级到 v6
+
+`@wangeditor-next/editor@6.0.0` 的主要不兼容变化是内置视频节点的对齐和 HTML
+输出结构。表格拖拽等同版本包含的其他修改属于缺陷修复。
+
+## 升级依赖
+
+```shell
+npm install @wangeditor-next/editor@^6.0.0
+```
+
+React 项目需要同步升级适配器：
+
+```shell
+npm install @wangeditor-next/editor-for-react@^3.0.0
+```
+
+Vue 2、Vue 3 和可选插件请升级到各自的最新版本，并确保 lockfile 中实际解析到的
+`@wangeditor-next/editor` 是 6.x。
+
+## 视频节点对齐
+
+v5 视频节点使用 `textAlign`。v6 改为媒体专用的 `align` 字段：
+
+```ts
+type VideoAlign = 'left' | 'center' | 'right'
+
+const video = {
+  type: 'video',
+  src: 'https://example.com/video.mp4',
+  align: 'center' as VideoAlign,
+  children: [{ text: '' }],
+}
+```
+
+旧的 `textAlign` 节点和 HTML 仍可导入，编辑器会按新的媒体对齐模型解释
+`left`、`center` 和 `right`。`justify` 不再是视频的有效对齐值，无法识别的值会回退到居中。
+
+## HTML 输出结构
+
+v5 使用 `<div data-w-e-type="video">` 和 `text-align`。v6 使用全宽 flex 容器：
+
+```html
+<figure
+  data-w-e-type="video"
+  data-w-e-is-void
+  data-w-e-align="center"
+  style="display: flex; justify-content: center; margin: 0; max-width: 100%; width: 100%;"
+>
+  <video><!-- ... --></video>
+</figure>
+```
+
+如果业务 CSS、HTML 清洗规则、服务端模板或自动化测试依赖旧的 `div` 标签、
+`data-w-e-text-align` 或 `text-align`，升级时需要改为匹配 `figure[data-w-e-type="video"]`、
+`data-w-e-align` 和 flex 对齐结构。
+
+## 升级检查
+
+1. 搜索自定义视频节点中的 `textAlign`，改为 `align`。
+2. 搜索针对 `div[data-w-e-type="video"]` 的 CSS 和 DOM 查询。
+3. 验证 `editor.getHtml()` 的视频输出能通过业务 HTML 清洗和存储链路。
+4. 用历史内容执行一次 `editor.setHtml(oldHtml)`，确认视频位置和尺寸符合预期。
+5. React 项目确认 `@wangeditor-next/editor-for-react` 已升级到 3.x。
+
+完整发布内容见 [v6.0.0 release notes](https://github.com/wangeditor-next/wangEditor-next/releases/tag/v6.0.0)。
+
+---
+
 <!-- source: docs/zh/guide/getting-started.md -->
 
-## 3. getting-started.md
+## 4. getting-started.md
 
 # 快速开始
 
@@ -323,7 +397,7 @@ const toolbar = createToolbar({
 
 <!-- source: docs/zh/guide/for-frame.md -->
 
-## 4. for-frame.md
+## 5. for-frame.md
 
 # 用于 Vue React
 
@@ -840,7 +914,7 @@ return (
 
 <!-- source: docs/zh/guide/content.md -->
 
-## 5. content.md
+## 6. content.md
 
 # 内容处理
 
@@ -967,7 +1041,7 @@ ajax(url, res => {
 
 <!-- source: docs/zh/guide/toolbar-config.md -->
 
-## 6. toolbar-config.md
+## 7. toolbar-config.md
 
 # 工具栏配置
 
@@ -1092,7 +1166,7 @@ editor.on('modalOrPanelHide', () => {
 
 <!-- source: docs/zh/guide/editor-config.md -->
 
-## 7. editor-config.md
+## 8. editor-config.md
 
 # 编辑器配置
 
@@ -1433,7 +1507,7 @@ editorConfig.customAlert = (s: string, t: string) => {    // TS 语法
 
 <!-- source: docs/zh/guide/csp-class-mode.md -->
 
-## 8. csp-class-mode.md
+## 9. csp-class-mode.md
 
 # CSP class 样式模式
 
@@ -1544,7 +1618,7 @@ const editor = createEditor({
 
 <!-- source: docs/zh/guide/menu-config.md -->
 
-## 9. menu-config.md
+## 10. menu-config.md
 
 # 菜单配置
 
@@ -2413,6 +2487,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 - `minWidth` 单元格最小宽度
 - `tableHeader` 表头
 - `tableFullWidth` 表格宽度自适应
+- `widthExportMode` 表格宽度导出策略（`explicit` | `adaptive`，默认 `explicit`）
 - `insertTableCol.insertPosition` 插入列位置（`before` | `after`，默认 `before`）
 
 `tableFullWidth` 点击后会切换为 `width: 100%` 的响应式模式。后续容器宽度变化时，表格会自动跟随，无需再次点击。
@@ -2428,6 +2503,18 @@ editorConfig.MENU_CONF['insertTable'] = {
     tableFullWidth: {
         selected: true, // 默认启用表格宽度自适应
     },
+    // 表格宽度导出策略
+    // explicit: 兼容历史行为，优先导出固定像素宽
+    // adaptive: 保留 width:auto（适合不希望自动固化列宽的场景）
+    widthExportMode: 'explicit',
+}
+```
+
+如果你希望 `setHtml` 导入 `width:auto` 的表格后，`getHtml` 仍然保持 `width:auto`，可以开启 `adaptive`：
+
+```ts
+editorConfig.MENU_CONF['insertTable'] = {
+    widthExportMode: 'adaptive',
 }
 ```
 
@@ -2479,7 +2566,7 @@ editorConfig.MENU_CONF['codeBlock'] = {
 
 <!-- source: docs/zh/guide/API.md -->
 
-## 10. API.md
+## 11. API.md
 
 # 编辑器 API
 
@@ -3218,7 +3305,7 @@ import { SlateLocation, SlatePath, SlatePoint, SlateRange } from '@wangeditor-ne
 
 <!-- source: docs/zh/guide/node-define.md -->
 
-## 11. node-define.md
+## 12. node-define.md
 
 # 节点数据结构
 
@@ -3310,7 +3397,7 @@ wangEditor 是基于 slate.js 为内核开发的，所以学习本文之前，�
 
 <!-- source: docs/zh/guide/development.md -->
 
-## 12. development.md
+## 13. development.md
 
 # 自定义扩展新功能
 
@@ -4089,7 +4176,7 @@ Boot.registerModule(module)
 
 <!-- source: docs/zh/guide/i18n.md -->
 
-## 13. i18n.md
+## 14. i18n.md
 
 # 多语言
 
@@ -4154,7 +4241,7 @@ console.log( t('header.title') )
 
 <!-- source: docs/zh/guide/theme.md -->
 
-## 14. theme.md
+## 15. theme.md
 
 # 主题
 
@@ -4173,7 +4260,7 @@ html.dark {
 
 <!-- source: docs/zh/guide/for-ts.md -->
 
-## 15. for-ts.md
+## 16. for-ts.md
 
 # 用于 Typescript
 
@@ -4204,7 +4291,7 @@ declare module '@wangeditor-next/editor' {
 
 <!-- source: docs/zh/guide/plugins.md -->
 
-## 16. plugins.md
+## 17. plugins.md
 
 # 插件
 
@@ -4220,7 +4307,7 @@ declare module '@wangeditor-next/editor' {
 
 <!-- source: docs/zh/guide/video-course.md -->
 
-## 17. video-course.md
+## 18. video-course.md
 
 # 视频教程
 

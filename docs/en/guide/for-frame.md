@@ -188,7 +188,7 @@ methods: {
 
 ### Installation
 
-Install `@wangeditor-next/editor` and `@wangeditor-next/editor-for-vue@next`, see [Installation](./installation.md).
+Install `@wangeditor-next/editor` and `@wangeditor-next/editor-for-vue`, see [Installation](./installation.md).
 
 ```sh
 yarn add @wangeditor-next/editor

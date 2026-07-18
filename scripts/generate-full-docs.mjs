@@ -34,6 +34,7 @@ const bundles = [
 const preferredFileOrder = [
   'index.md',
   'installation.md',
+  'migration-v6.md',
   'getting-started.md',
   'for-frame.md',
   'content.md',

@@ -26,8 +26,8 @@ yarn add @wangeditor-next/editor-for-vue2
 Install Vue 3.x editor component  (optional)
 
 ```shell
-yarn add @wangeditor-next/editor-for-vue@next
-# npm install @wangeditor-next/editor-for-vue@next --save
+yarn add @wangeditor-next/editor-for-vue
+# npm install @wangeditor-next/editor-for-vue --save
 ```
 
 ## CDN

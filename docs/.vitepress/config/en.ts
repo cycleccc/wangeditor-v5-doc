@@ -93,6 +93,11 @@ function sidebarGuide(): DefaultTheme.SidebarItem[] {
             link: '/installation',
         },
         {
+            text: 'Upgrade from v5 to v6',
+            collapsed: false,
+            link: '/migration-v6',
+        },
+        {
             text: 'Basics',
             collapsed: false,
             items: [
