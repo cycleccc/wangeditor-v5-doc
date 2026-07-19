@@ -2,7 +2,7 @@
 
 > This file is auto-generated and consolidates full Markdown from the English guide pages.
 > It is raw Markdown for one-shot AI context feeding (no page rendering).
-> Generated at: Jul 17, 2026, 16:15:23 (Asia/Shanghai)
+> Generated at: Jul 19, 2026, 16:27:01 (Asia/Shanghai)
 > Language: [中文 Raw Markdown](/ai/zh-guide-full.txt)
 
 ## Included Files
@@ -15,15 +15,16 @@
 7. `docs/en/guide/toolbar-config.md`
 8. `docs/en/guide/editor-config.md`
 9. `docs/en/guide/csp-class-mode.md`
-10. `docs/en/guide/menu-config.md`
-11. `docs/en/guide/API.md`
-12. `docs/en/guide/node-define.md`
-13. `docs/en/guide/development.md`
-14. `docs/en/guide/i18n.md`
-15. `docs/en/guide/theme.md`
-16. `docs/en/guide/for-ts.md`
-17. `docs/en/guide/plugins.md`
-18. `docs/en/guide/video-course.md`
+10. `docs/en/guide/style-presets.md`
+11. `docs/en/guide/menu-config.md`
+12. `docs/en/guide/API.md`
+13. `docs/en/guide/node-define.md`
+14. `docs/en/guide/development.md`
+15. `docs/en/guide/i18n.md`
+16. `docs/en/guide/theme.md`
+17. `docs/en/guide/for-ts.md`
+18. `docs/en/guide/plugins.md`
+19. `docs/en/guide/video-course.md`
 
 ---
 
@@ -828,9 +829,15 @@ const text = editor.getText()
 
 ### Custom Style
 
-`editor.getHtml()` can only get pure HTML, there is no inline styles. You need to define your custom style. See some demos:
+Depending on the content and configuration, `editor.getHtml()` can emit elements, classes, `data-w-e-*` attributes, and inline styles for some built-in formats in the default mode. Load both the editor's base stylesheet and your application CSS when rendering the HTML.
+
+Use [Custom Style Presets](./style-presets.md) when application concepts such as leads, callouts, or muted text should remain stable in stored content. The plugin persists a preset key in JSON and HTML while application CSS controls its appearance.
+
+See these demos:
+
 - [Get and render HTML](https://wangeditor-next.github.io/demo/get-html.html?lang=en)
 - [Custom CSS style](https://wangeditor-next.github.io/demo/css/view.css)
+- [Custom style presets](https://wangeditor-next.github.io/demo/custom-styles.html?lang=en)
 
 You should use [Prism.js](https://prismjs.com/) to highlight code block by yourself. See [demo](https://wangeditor-next.github.io/demo/code-highlight.html?lang=en).
 
@@ -1530,9 +1537,147 @@ For custom tokens, prefer rules based on `data-w-e-*` instead of hash class name
 
 ---
 
+<!-- source: docs/en/guide/style-presets.md -->
+
+## 10. style-presets.md
+
+# Custom Style Presets
+
+`@wangeditor-next/plugin-style-presets` adds semantic text and block style presets to wangEditor v6. Stored content keeps a stable preset key while application CSS controls presentation, so themes can change without rewriting historical content.
+
+The plugin is opt-in. It does not change the existing toolbar, node structure, or HTML output unless it is registered and configured.
+
+See the [live demo](https://wangeditor-next.github.io/demo/custom-styles.html?lang=en).
+
+## Install and Register
+
+```shell
+pnpm add @wangeditor-next/plugin-style-presets
+```
+
+```ts
+import { Boot } from '@wangeditor-next/editor'
+import stylePresetsModule from '@wangeditor-next/plugin-style-presets'
+
+// Register once before creating any editor
+Boot.registerModule(stylePresetsModule)
+```
+
+## Configure the Toolbar
+
+```ts
+const editorConfig = {
+  MENU_CONF: {
+    stylePreset: {
+      presets: [
+        {
+          key: 'muted-text',
+          title: 'Muted text',
+          scope: 'text',
+          className: 'article-muted',
+        },
+        {
+          key: 'lead-paragraph',
+          title: 'Lead paragraph',
+          scope: 'block',
+          className: 'article-lead',
+        },
+      ],
+    },
+  },
+}
+
+const toolbarConfig = {
+  insertKeys: {
+    index: 4,
+    keys: ['stylePreset'],
+  },
+}
+```
+
+- `key`: Stable kebab-case identifier stored in JSON and HTML. Do not rename it when changing themes.
+- `title`: Label displayed in the toolbar menu.
+- `scope: 'text'`: Applies to selected text or subsequent input.
+- `scope: 'block'`: Applies to selected paragraphs, headings, list items, and other blocks.
+- `className`: Optional application class names separated by spaces.
+
+`key`, `title`, and `scope` are required. The plugin throws while reading configuration for duplicate or invalid keys, invalid classes, or overlapping class mappings in the same scope.
+
+## Add Application CSS
+
+```css
+.article-muted {
+  color: var(--article-muted-color, #667085);
+  font-size: 0.875rem;
+}
+
+.article-lead {
+  color: var(--article-lead-color, #344054);
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+```
+
+Load the same application CSS in the editor and in standalone HTML viewers. The plugin always emits `w-e-style-preset-${key}`, so you can also omit `className` and target the generated class directly:
+
+```css
+.w-e-style-preset-lead-paragraph {
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+```
+
+## Data and HTML
+
+A text preset is stored on text nodes:
+
+```json
+{ "text": "Muted content", "stylePreset": "muted-text" }
+```
+
+```html
+<span class="w-e-style-preset-muted-text article-muted" data-w-e-style-preset="muted-text">Muted content</span>
+```
+
+A block preset is stored on a paragraph, heading, or another block node:
+
+```html
+<p class="w-e-style-preset-lead-paragraph article-lead" data-w-e-style-preset="lead-paragraph">
+  Article lead
+</p>
+```
+
+HTML import prefers `data-w-e-style-preset`. If that attribute is absent, the plugin can restore a preset from its configured application class. Unknown data keys remain in the document, so adding the configuration later restores their application styling.
+
+## Command API
+
+```ts
+import {
+  applyStylePreset,
+  getActiveStylePreset,
+  removeStylePreset,
+} from '@wangeditor-next/plugin-style-presets'
+
+applyStylePreset(editor, 'muted-text')
+getActiveStylePreset(editor) // 'muted-text' | null
+removeStylePreset(editor, 'text') // or 'block' / 'all'
+```
+
+## Relationship to Existing Style Modes
+
+- The plugin supports `@wangeditor-next/editor >= 6.0.0`.
+- Existing `inline` and `class` modes still handle low-level formats such as color, font size, and line height. The plugin does not replace them.
+- Use presets for application semantics such as leads and callouts. Avoid embedding concrete colors or sizes in a preset `key`.
+- The plugin does not enter the default toolbar or migrate existing JSON and HTML automatically.
+- Output supports `Slate -> HTML -> Slate`, `HTML -> Slate -> HTML`, and `setHtml(getHtml())` round trips.
+
+For strict CSP environments, also see [CSP Class Style Mode](./csp-class-mode.md).
+
+---
+
 <!-- source: docs/en/guide/menu-config.md -->
 
-## 10. menu-config.md
+## 11. menu-config.md
 
 # Menu Config
 
@@ -2442,7 +2587,7 @@ You can see [General-way](#general-way) to change other menus config.
 
 <!-- source: docs/en/guide/API.md -->
 
-## 11. API.md
+## 12. API.md
 
 # Editor API
 
@@ -3120,7 +3265,7 @@ import { SlateLocation, SlatePath, SlatePoint, SlateRange } from '@wangeditor-ne
 
 <!-- source: docs/en/guide/node-define.md -->
 
-## 12. node-define.md
+## 13. node-define.md
 
 # Date Structure
 
@@ -3208,7 +3353,7 @@ See `type` in every source code.
 
 <!-- source: docs/en/guide/development.md -->
 
-## 13. development.md
+## 14. development.md
 
 # Extend
 
@@ -3220,7 +3365,7 @@ See [Chinese version](../../zh/guide/development.md).
 
 <!-- source: docs/en/guide/i18n.md -->
 
-## 14. i18n.md
+## 15. i18n.md
 
 # I18n
 
@@ -3285,7 +3430,7 @@ console.log( t('header.title') )
 
 <!-- source: docs/en/guide/theme.md -->
 
-## 15. theme.md
+## 16. theme.md
 
 # Theme
 
@@ -3304,7 +3449,7 @@ html.dark {
 
 <!-- source: docs/en/guide/for-ts.md -->
 
-## 16. for-ts.md
+## 17. for-ts.md
 
 # For Typescript
 
@@ -3335,7 +3480,7 @@ declare module '@wangeditor-next/editor' {
 
 <!-- source: docs/en/guide/plugins.md -->
 
-## 17. plugins.md
+## 18. plugins.md
 
 # Plugins
 
@@ -3351,7 +3496,7 @@ declare module '@wangeditor-next/editor' {
 
 <!-- source: docs/en/guide/video-course.md -->
 
-## 18. video-course.md
+## 19. video-course.md
 
 # Video Tutorials
 
