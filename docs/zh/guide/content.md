@@ -37,6 +37,15 @@ const text = editor.getText()
 - [自定义样式](https://wangeditor-next.github.io/demo/css/view.css)
 
 另外，**代码高亮**也需要自行处理，推荐使用 [Prism.js](https://prismjs.com/) ，因为编辑器内容内部也是基于 Prism.js 来实现的。可参考 [demo](https://wangeditor-next.github.io/demo/code-highlight.html)。
+### 编辑器内部样式
+
+为避免页面中的 `reset.css`、Tailwind CSS Preflight 等全局样式影响编辑体验，wangEditor 会在编辑区域内部提供一组带作用域的基础内容样式，根选择器为 `.w-e-text-container [data-slate-editor]`。这些样式会维护标题层级、段落和列表间距、列表标记、代码和表格等结构性表现。
+
+这是 CSS 作用域约束，不是 iframe 或 Shadow DOM 隔离。业务页面仍可以通过编辑器容器或 `[data-slate-editor]` 下更具体的选择器，按需覆盖字体、颜色和间距；不要使用无作用域的 `!important` 覆盖编辑器结构样式。
+
+该行为只适用于编辑器内部。`editor.getHtml()` 返回的仍是纯 HTML，不包含这些 CSS。将内容渲染到文章详情、评论或其他编辑器之外的页面时，需要由业务页面提供对应的内容展示样式。
+
+该约定用于处理 [Issue #988](https://github.com/wangeditor-next/wangEditor-next/issues/988)，实现关联 [PR #992](https://github.com/wangeditor-next/wangEditor-next/pull/992)。
 
 ## 设置内容
 
