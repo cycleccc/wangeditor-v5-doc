@@ -6,13 +6,6 @@
 
 Use `editor.getHtml()` to get HTML content, see [demo](https://wangeditor-next.github.io/demo/get-html.html?lang=en). Use `editor.getText()` to get text content.
 
-If you need HTML with unique id attributes (for node tracking/positioning), use `editor.getHtmlWithId(idKey?)`:
-
-```js
-const html = editor.getHtmlWithId() // default data-w-e-id
-const html2 = editor.getHtmlWithId('data-node-id') // custom attribute key
-```
-
 PS: HTML format is recommended.
 
 ### Get JSON
@@ -35,6 +28,16 @@ const text = editor.getText()
 - [Custom CSS style](https://wangeditor-next.github.io/demo/css/view.css)
 
 You should use [Prism.js](https://prismjs.com/) to highlight code block by yourself. See [demo](https://wangeditor-next.github.io/demo/code-highlight.html?lang=en).
+
+### Editor Content Styles
+
+To keep editing predictable when the host page includes `reset.css`, Tailwind CSS Preflight, or similar global styles, wangEditor provides scoped base content styles inside the editable area. The scope root is `.w-e-text-container [data-slate-editor]`; it preserves structural behavior such as heading hierarchy, paragraph and list spacing, list markers, code blocks, and table borders.
+
+This is CSS scoping, not iframe or Shadow DOM isolation. You can customize fonts, colors, and spacing with selectors scoped to the editor container or `[data-slate-editor]`. Avoid unscoped `!important` rules that override structural editor styles.
+
+This behavior applies only inside the editor. `editor.getHtml()` still returns pure HTML without these styles. When rendering that HTML in an article, comment, or any page outside the editor, your application must provide the corresponding content CSS.
+
+This convention addresses [Issue #988](https://github.com/wangeditor-next/wangEditor-next/issues/988) and is implemented in [PR #984](https://github.com/wangeditor-next/wangEditor-next/pull/984).
 
 ## Set Content
 
