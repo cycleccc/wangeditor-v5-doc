@@ -30,9 +30,15 @@ const text = editor.getText()
 
 ### Custom Style
 
-`editor.getHtml()` can only get pure HTML, there is no inline styles. You need to define your custom style. See some demos:
+Depending on the content and configuration, `editor.getHtml()` can emit elements, classes, `data-w-e-*` attributes, and inline styles for some built-in formats in the default mode. Load both the editor's base stylesheet and your application CSS when rendering the HTML.
+
+Use [Custom Style Presets](./style-presets.md) when application concepts such as leads, callouts, or muted text should remain stable in stored content. The plugin persists a preset key in JSON and HTML while application CSS controls its appearance.
+
+See these demos:
+
 - [Get and render HTML](https://wangeditor-next.github.io/demo/get-html.html?lang=en)
 - [Custom CSS style](https://wangeditor-next.github.io/demo/css/view.css)
+- [Custom style presets](https://wangeditor-next.github.io/demo/custom-styles.html?lang=en)
 
 You should use [Prism.js](https://prismjs.com/) to highlight code block by yourself. See [demo](https://wangeditor-next.github.io/demo/code-highlight.html?lang=en).
 ### Editor Content Styles

@@ -32,9 +32,15 @@ const text = editor.getText()
 
 ### 自定义样式
 
-编辑器输出或者生成的 HTML 都是**纯标签**，没有内联样式。所以，显示 HTML 时需要你自定义样式。可参考以下示例
+`editor.getHtml()` 会根据内容和配置输出标签、class、`data-w-e-*` 属性，部分内置格式在默认模式下也会输出内联样式。显示 HTML 时，需要同时加载编辑器基础样式和你的业务样式。
+
+如果希望把“导语”“提示块”“辅助文字”等业务语义稳定地保存到内容中，可使用[自定义样式预设](./style-presets.md)。它将稳定的 preset key 写入 JSON 和 HTML，视觉效果由业务 CSS 控制。
+
+可参考以下示例：
+
 - [显示 HTML](https://wangeditor-next.github.io/demo/get-html.html)
 - [自定义样式](https://wangeditor-next.github.io/demo/css/view.css)
+- [自定义样式预设](https://wangeditor-next.github.io/demo/custom-styles.html)
 
 另外，**代码高亮**也需要自行处理，推荐使用 [Prism.js](https://prismjs.com/) ，因为编辑器内容内部也是基于 Prism.js 来实现的。可参考 [demo](https://wangeditor-next.github.io/demo/code-highlight.html)。
 ### 编辑器内部样式

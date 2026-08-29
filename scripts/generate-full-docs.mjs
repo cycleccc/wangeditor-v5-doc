@@ -41,6 +41,7 @@ const preferredFileOrder = [
   'toolbar-config.md',
   'editor-config.md',
   'csp-class-mode.md',
+  'style-presets.md',
   'menu-config.md',
   'API.md',
   'node-define.md',
